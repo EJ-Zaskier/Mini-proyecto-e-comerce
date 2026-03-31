@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 700" role="img" aria-labelledby="title desc">
+  <title id="title">Logo Tecnologias de la Informacion UTTehuacan</title>
+  <desc id="desc">Escudo circular azul con simbolos de conectividad y circuitos.</desc>
+  <defs>
+    <linearGradient id="gBlue" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#1f6f89"/>
+      <stop offset="100%" stop-color="#114f66"/>
+    </linearGradient>
+  </defs>
+  <ellipse cx="256" cy="344" rx="244" ry="330" fill="url(#gBlue)"/>
+  <ellipse cx="256" cy="344" rx="190" ry="250" fill="#f6f8fc"/>
+  <path d="M128 242 C196 170 316 170 384 242" fill="none" stroke="#1f6f89" stroke-width="14"/>
+  <path d="M166 292 C214 242 298 242 346 292" fill="none" stroke="#1f6f89" stroke-width="14"/>
+  <path d="M208 340 C236 312 276 312 304 340" fill="none" stroke="#1f6f89" stroke-width="14"/>
+  <circle cx="176" cy="452" r="18" fill="#f3b33f"/>
+  <circle cx="256" cy="430" r="20" fill="#f3b33f"/>
+  <circle cx="336" cy="452" r="18" fill="#f3b33f"/>
+  <path d="M176 470 V560 M256 450 V584 M336 470 V560" stroke="#1f6f89" stroke-width="12" stroke-linecap="round"/>
+  <path d="M140 640 A180 180 0 0 0 372 640" fill="none" stroke="#f6f8fc" stroke-width="2"/>
+  <text x="256" y="72" fill="#f6f8fc" font-family="Arial, sans-serif" font-size="30" text-anchor="middle" letter-spacing="2">
+    TECNOLOGIAS DE LA INFORMACION
+  </text>
+  <text x="256" y="668" fill="#f6f8fc" font-family="Arial, sans-serif" font-size="44" text-anchor="middle" letter-spacing="5">
+    UTTEHUACAN
+  </text>
+</svg>
