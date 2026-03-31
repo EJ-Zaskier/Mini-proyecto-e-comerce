@@ -1,0 +1,13 @@
+Backend/node_modules/
+Frontend/node_modules/
+Frontend/build/
+Frontend/dist/
+Backend/.mongo-data/
+
+*.log
+.pids.txt
+
+Backend/.env
+Backend/.env.example
+Frontend/.env
+Frontend/.env.example
