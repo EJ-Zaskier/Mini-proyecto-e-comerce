@@ -1,0 +1,103 @@
+.app-shell {
+  width: min(1360px, 100%);
+  margin: 0 auto;
+  padding: 1rem 1.2rem 2rem;
+}
+
+.site-header {
+  position: sticky;
+  top: 0.45rem;
+  z-index: 20;
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+  padding: 0.85rem 1rem;
+  border-radius: 18px;
+  border: 1px solid var(--line);
+  background: linear-gradient(120deg, rgba(10, 18, 24, 0.76), rgba(9, 30, 26, 0.62));
+  backdrop-filter: blur(18px) saturate(140%);
+  box-shadow: var(--dark-shadow);
+  color: #f2f7ff;
+}
+
+.site-headline h1 {
+  margin: 0;
+  letter-spacing: 0.04em;
+  font-size: clamp(1.05rem, 2vw, 1.4rem);
+}
+
+.site-headline p {
+  margin: 0.24rem 0 0;
+  color: rgba(227, 239, 255, 0.82);
+  font-size: 0.86rem;
+}
+
+.header-nav,
+.session-panel {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  flex-wrap: wrap;
+}
+
+.nav-pill {
+  text-decoration: none;
+  border-radius: 999px;
+  border: 1px solid rgba(158, 236, 210, 0.28);
+  background: rgba(171, 248, 222, 0.08);
+  color: #f1f6ff;
+  padding: 0.34rem 0.68rem;
+  font-size: 0.82rem;
+  transition: transform 220ms ease, border-color 220ms ease, background 220ms ease;
+}
+
+.nav-pill:hover {
+  transform: translateY(-1px);
+  border-color: rgba(186, 250, 228, 0.6);
+  background: rgba(171, 248, 222, 0.16);
+}
+
+.nav-pill-active {
+  border-color: rgba(211, 255, 241, 0.7);
+  background: rgba(162, 242, 212, 0.24);
+}
+
+.theme-toggle-btn {
+  border: 1px solid rgba(206, 231, 255, 0.38);
+  background: rgba(182, 215, 250, 0.18);
+  color: #eff7ff;
+  border-radius: 999px;
+  padding: 0.35rem 0.72rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.theme-toggle-btn:hover {
+  filter: brightness(1.08);
+}
+
+.session-chip {
+  min-width: 130px;
+  display: grid;
+  gap: 0.1rem;
+  padding: 0.38rem 0.62rem;
+  border-radius: 11px;
+  border: 1px solid rgba(196, 215, 247, 0.33);
+  background: rgba(205, 221, 250, 0.12);
+}
+
+.session-chip strong {
+  font-size: 0.84rem;
+}
+
+.session-chip span {
+  font-size: 0.74rem;
+  color: #bdccec;
+}
+
+.content {
+  padding-bottom: 2rem;
+}

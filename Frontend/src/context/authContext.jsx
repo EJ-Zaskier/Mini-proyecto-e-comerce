@@ -6,43 +6,25 @@ import {
   useMemo,
   useState
 } from 'react';
-import api from '../services/api';
+import { fetchAuthenticatedUser } from '../services/authService';
+import {
+  clearSessionStorage,
+  persistSession,
+  readSessionToken,
+  readSessionUser
+} from '../services/sessionStore';
 
 const AuthContext = createContext(null);
-
-const readStoredToken = () => sessionStorage.getItem('token');
-
-const readStoredUser = () => {
-  const rawUser = sessionStorage.getItem('user');
-  if (!rawUser) return null;
-
-  try {
-    return JSON.parse(rawUser);
-  } catch {
-    sessionStorage.removeItem('user');
-    return null;
-  }
-};
-
-const persistSession = ({ token, user }) => {
-  sessionStorage.setItem('token', token);
-  sessionStorage.setItem('user', JSON.stringify(user));
-};
-
-const clearPersistedSession = () => {
-  sessionStorage.removeItem('token');
-  sessionStorage.removeItem('user');
-};
 
 export const useAuth = () => useContext(AuthContext);
 
 export const AuthProvider = ({ children }) => {
-  const [token, setToken] = useState(readStoredToken);
-  const [user, setUser] = useState(readStoredUser);
-  const [loadingUser, setLoadingUser] = useState(Boolean(readStoredToken()));
+  const [token, setToken] = useState(readSessionToken);
+  const [user, setUser] = useState(readSessionUser);
+  const [loadingUser, setLoadingUser] = useState(Boolean(readSessionToken()));
 
   const clearSession = useCallback(() => {
-    clearPersistedSession();
+    clearSessionStorage();
     setToken(null);
     setUser(null);
   }, []);
@@ -59,15 +41,14 @@ export const AuthProvider = ({ children }) => {
   }, [clearSession]);
 
   const refreshUser = useCallback(async () => {
-    const storedToken = readStoredToken();
+    const storedToken = readSessionToken();
     if (!storedToken) {
       clearSession();
       return null;
     }
 
     try {
-      const { data } = await api.get('/auth/me');
-      const refreshedUser = data.user;
+      const refreshedUser = await fetchAuthenticatedUser();
       persistSession({ token: storedToken, user: refreshedUser });
       setToken(storedToken);
       setUser(refreshedUser);
@@ -82,7 +63,7 @@ export const AuthProvider = ({ children }) => {
     let mounted = true;
 
     const bootstrapAuth = async () => {
-      const storedToken = readStoredToken();
+      const storedToken = readSessionToken();
       if (!storedToken) {
         if (mounted) setLoadingUser(false);
         return;

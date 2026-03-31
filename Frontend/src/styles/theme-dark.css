@@ -1,0 +1,89 @@
+body[data-theme='dark'] .card {
+  border: 1px solid rgba(154, 226, 199, 0.14);
+  background: linear-gradient(150deg, rgba(84, 148, 125, 0.08), rgba(88, 131, 149, 0.05));
+  box-shadow: 0 10px 22px rgba(1, 5, 14, 0.3);
+}
+
+body[data-theme='dark'] .muted {
+  color: #9fb2d6;
+}
+
+body[data-theme='dark'] input,
+body[data-theme='dark'] select,
+body[data-theme='dark'] textarea {
+  color: #edf4ff;
+  border: 1px solid rgba(166, 228, 205, 0.34);
+  background: rgba(195, 240, 220, 0.08);
+}
+
+body[data-theme='dark'] input::placeholder,
+body[data-theme='dark'] textarea::placeholder {
+  color: #afc0de;
+}
+
+body[data-theme='dark'] .btn {
+  background: rgba(207, 224, 255, 0.2);
+  color: #f7fbff;
+}
+
+body[data-theme='dark'] .btn-cta {
+  background: linear-gradient(130deg, var(--primary), var(--primary-soft));
+  color: #102436;
+}
+
+body[data-theme='dark'] .btn-outline {
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  color: #edf6ff;
+}
+
+body[data-theme='dark'] .tab-button {
+  border-color: rgba(162, 231, 206, 0.36);
+  background: rgba(170, 241, 214, 0.1);
+  color: #e9f1ff;
+}
+
+body[data-theme='dark'] .tab-button-active {
+  background: rgba(172, 245, 217, 0.24);
+  border-color: rgba(213, 255, 241, 0.64);
+  color: #eff8ff;
+}
+
+body[data-theme='dark'] .data-table th,
+body[data-theme='dark'] .data-table td {
+  border-bottom-color: rgba(198, 220, 255, 0.18);
+}
+
+body[data-theme='dark'] .data-table th {
+  color: #dce8ff;
+}
+
+body[data-theme='dark'] .price {
+  color: #b8ffe0;
+  text-shadow: 0 1px 0 rgba(3, 8, 20, 0.55);
+}
+
+body[data-theme='dark'] .product-card {
+  border-color: rgba(154, 226, 199, 0.22);
+  background: rgba(7, 17, 27, 0.16);
+}
+
+body[data-theme='dark'] .chip {
+  background: rgba(170, 238, 215, 0.26);
+  color: #dcfff1;
+}
+
+body[data-theme='dark'] .chip-dark {
+  background: rgba(133, 196, 169, 0.3);
+  color: #e5fff4;
+}
+
+body[data-theme='dark'] .product-card::before {
+  background: linear-gradient(130deg, rgba(53, 212, 151, 0.08), rgba(136, 186, 234, 0.07));
+}
+
+body[data-theme='dark'] .lift-card:hover,
+body[data-theme='dark'] .lift-card:focus-within {
+  border-color: rgba(180, 245, 219, 0.52);
+  box-shadow: 0 16px 30px rgba(3, 10, 24, 0.4);
+  background: rgba(10, 28, 29, 0.26);
+}

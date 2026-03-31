@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/authContext';
-import api from '../services/api';
+import { loginRequest } from '../services/authService';
+import { addItemToCart } from '../services/cartService';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -19,7 +20,7 @@ const Login = () => {
     if (!pendingAction?.type) return false;
 
     if (pendingAction.type === 'add_to_cart' && pendingAction.productId) {
-      await api.post('/cart/items', {
+      await addItemToCart({
         productId: pendingAction.productId,
         quantity: pendingAction.quantity || 1,
         talla: pendingAction.talla
@@ -56,7 +57,7 @@ const Login = () => {
     setLoading(true);
 
     try {
-      const { data } = await api.post('/auth/login', form);
+      const data = await loginRequest(form);
       login({ token: data.token, user: data.user });
 
       const pendingAction = location.state?.pendingAction;

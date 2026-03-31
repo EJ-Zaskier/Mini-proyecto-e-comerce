@@ -1,0 +1,14 @@
+:root {
+  --bg: #ffffff;
+  --bg-soft: #f3f6f9;
+  --glass: rgba(24, 64, 97, 0.06);
+  --glass-strong: rgba(24, 64, 97, 0.12);
+  --line: rgba(18, 62, 90, 0.18);
+  --text: #112435;
+  --muted: #54687d;
+  --primary: #ff6d3a;
+  --primary-soft: #ff8d63;
+  --danger: #ff5a66;
+  --success: #4fe2a1;
+  --dark-shadow: 0 12px 28px rgba(15, 23, 35, 0.12);
+}

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/authContext';
-import api from '../services/api';
+import { registerRequest } from '../services/authService';
 
 const Register = () => {
   const navigate = useNavigate();
@@ -20,7 +20,7 @@ const Register = () => {
     setLoading(true);
 
     try {
-      const { data } = await api.post('/auth/register', form);
+      const data = await registerRequest(form);
       login({ token: data.token, user: data.user });
       navigate('/catalogo', { replace: true });
     } catch (requestError) {

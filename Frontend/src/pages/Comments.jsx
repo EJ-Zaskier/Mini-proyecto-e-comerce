@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import api from '../services/api';
+import { createComment, listComments } from '../services/commentsService';
 
 
 const Comments = () => {
@@ -7,13 +7,13 @@ const Comments = () => {
   const [text, setText] = useState('');
 
   const load = async () => {
-    const res = await api.get('/comments');
-    setComments(res.data.comments || []);
+    const nextComments = await listComments();
+    setComments(nextComments);
   };
 
   const send = async () => {
     if (!text.trim()) return;
-    await api.post('/comments', { contenido: text.trim() });
+    await createComment(text.trim());
     setText('');
     load();
   };

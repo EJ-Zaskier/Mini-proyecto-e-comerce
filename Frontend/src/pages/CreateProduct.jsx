@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import api from '../services/api';
+import { createProduct } from '../services/productsService';
 
 const CreateProduct = () => {
   const categories = useMemo(() => ([
@@ -50,7 +50,7 @@ const CreateProduct = () => {
     setError('');
 
     try {
-      await api.post('/products', {
+      await createProduct({
         ...form,
         precio: Number(form.precio),
         stock: Number(form.stock)

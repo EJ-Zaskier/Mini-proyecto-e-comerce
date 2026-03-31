@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { readSessionToken } from './sessionStore';
 
 
 const api = axios.create({
@@ -8,7 +9,7 @@ const api = axios.create({
 
 
 api.interceptors.request.use((config) => {
-  const token = sessionStorage.getItem('token');
+  const token = readSessionToken();
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }

@@ -1,7 +1,10 @@
 import { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/authContext';
-import api from '../services/api';
+import useToast from '../hooks/useToast';
+import { seedDemoProducts } from '../services/adminService';
+import { addItemToCart } from '../services/cartService';
+import { listProducts } from '../services/productsService';
 
 const formatCurrency = (amount) => new Intl.NumberFormat('es-MX', {
   style: 'currency',
@@ -51,7 +54,6 @@ const Products = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
-  const [toast, setToast] = useState(null);
   const [submittingProductId, setSubmittingProductId] = useState('');
   const [selectionByProduct, setSelectionByProduct] = useState({});
   const [query, setQuery] = useState('');
@@ -59,22 +61,21 @@ const Products = () => {
   const [categoryFilter, setCategoryFilter] = useState('');
   const [typeFilter, setTypeFilter] = useState('producto');
   const [seedingDemo, setSeedingDemo] = useState(false);
+  const { toast, showToast, hideToast } = useToast();
 
   const loadProducts = async () => {
     setLoading(true);
     setError('');
 
     try {
-      const { data } = await api.get('/products', {
-        params: {
-          q: query || undefined,
-          categoria: categoryFilter || undefined,
-          tipo: typeFilter || undefined,
-          segmento: segmentFilter || undefined,
-          limit: 100
-        }
+      const nextProducts = await listProducts({
+        q: query || undefined,
+        categoria: categoryFilter || undefined,
+        tipo: typeFilter || undefined,
+        segmento: segmentFilter || undefined,
+        limit: 100
       });
-      setProducts(data.products || []);
+      setProducts(nextProducts);
     } catch (requestError) {
       setError(requestError?.response?.data?.message || 'No se pudo cargar el catalogo');
     } finally {
@@ -90,16 +91,16 @@ const Products = () => {
   useEffect(() => {
     if (location.state?.flashMessage) {
       setSuccess(location.state.flashMessage);
-      setToast({ id: Date.now(), type: 'success', message: location.state.flashMessage });
+      showToast('success', location.state.flashMessage);
       navigate(location.pathname, { replace: true, state: {} });
     }
 
     if (location.state?.flashError) {
       setError(location.state.flashError);
-      setToast({ id: Date.now(), type: 'error', message: location.state.flashError });
+      showToast('error', location.state.flashError);
       navigate(location.pathname, { replace: true, state: {} });
     }
-  }, [location.pathname, location.state, navigate]);
+  }, [location.pathname, location.state, navigate, showToast]);
 
   useEffect(() => {
     setSelectionByProduct((current) => {
@@ -129,21 +130,9 @@ const Products = () => {
     });
   }, [products]);
 
-  useEffect(() => {
-    if (!toast) return undefined;
-    const timer = window.setTimeout(() => setToast(null), 4200);
-    return () => window.clearTimeout(timer);
-  }, [toast]);
-
   const featuredProduct = products[0] || null;
   const featuredName = featuredProduct?.nombre || 'Coleccion premium';
   const featuredPrice = featuredProduct ? formatCurrency(featuredProduct.precio) : 'Nuevas prendas';
-
-  const showToast = (type, message) => {
-    const normalized = String(message || '').trim();
-    if (!normalized) return;
-    setToast({ id: Date.now(), type, message: normalized });
-  };
 
   const handleFilterSubmit = async (event) => {
     event.preventDefault();
@@ -195,7 +184,7 @@ const Products = () => {
     }
 
     try {
-      await api.post('/cart/items', payload);
+      await addItemToCart(payload);
       const okMessage = `"${product.nombre}" (${payload.talla}) se agrego al carrito`;
       setSuccess(okMessage);
       showToast('success', okMessage);
@@ -215,7 +204,7 @@ const Products = () => {
     setSuccess('');
 
     try {
-      const { data } = await api.post('/admin/seed-products', { count: 45 });
+      const data = await seedDemoProducts(45);
       const okMessage = `${data.inserted} productos demo agregados`;
       setSuccess(okMessage);
       showToast('success', okMessage);
@@ -238,7 +227,7 @@ const Products = () => {
             <button
               type="button"
               className="toast-close"
-              onClick={() => setToast(null)}
+              onClick={hideToast}
               aria-label="Cerrar alerta"
             >
               x

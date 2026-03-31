@@ -1,140 +1,37 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useAuth } from '../context/authContext';
-import api from '../services/api';
-
-const initialProductForm = {
-  nombre: '',
-  descripcion: '',
-  precio: '',
-  stock: '0',
-  tipo: 'producto',
-  categoria: 'ropa',
-  segmento: 'hombre',
-  tallasTexto: 'S:8, M:10, L:7',
-  imagenUrl: ''
-};
-
-const initialUserForm = {
-  nombre: '',
-  email: '',
-  password: '',
-  role: 'user'
-};
-
-const segmentLabels = {
-  hombre: 'Hombre',
-  mujer: 'Mujer',
-  nino: 'Niño',
-  nina: 'Niña',
-  bebe: 'Bebe',
-  unisex: 'Unisex'
-};
-
-const adminTabs = [
-  { id: 'productos', label: 'Productos' },
-  { id: 'usuarios', label: 'Usuarios' },
-  { id: 'sesiones', label: 'Sesiones' },
-  { id: 'auditoria', label: 'Auditoria' }
-];
-
-const formatDate = (value) => new Date(value).toLocaleString('es-MX', {
-  dateStyle: 'short',
-  timeStyle: 'medium'
-});
-
-const ACTION_LABELS = Object.freeze({
-  'auth.register': 'Registro de cuenta',
-  'auth.login': 'Inicio de sesion',
-  'auth.login_failed': 'Inicio de sesion fallido',
-  'product.created': 'Producto creado',
-  'product.updated': 'Producto actualizado',
-  'product.deleted': 'Producto eliminado',
-  'product.quick_purchase': 'Compra directa',
-  'cart.item_added': 'Carrito: producto agregado',
-  'cart.item_quantity_updated': 'Carrito: cantidad actualizada',
-  'cart.item_removed': 'Carrito: producto eliminado',
-  'cart.checkout_completed': 'Compra finalizada',
-  'admin.user.created': 'Usuario creado por admin',
-  'admin.user.role_updated': 'Rol de usuario actualizado',
-  'admin.user.deleted': 'Usuario eliminado por admin',
-  'admin.products.seeded': 'Catalogo demo generado'
-});
-
-const getActionLabel = (action = '') => ACTION_LABELS[action] || 'Actividad registrada';
-
-const formatAuditDetail = (log) => {
-  const details = log?.details && typeof log.details === 'object' ? log.details : {};
-
-  switch (log?.action) {
-    case 'auth.register':
-      return 'Registro de cuenta correcto';
-    case 'auth.login':
-      return 'Inicio de sesion correcto';
-    case 'auth.login_failed':
-      return details.reason === 'user_not_found'
-        ? 'Intento fallido: usuario no encontrado'
-        : 'Intento fallido: contrasena incorrecta';
-    case 'product.created':
-      return `Se creo el producto ${details.nombre || ''}`.trim();
-    case 'product.updated':
-      return `Se actualizo el producto ${details.nombre || ''}`.trim();
-    case 'product.deleted':
-      return `Se elimino el producto ${details.nombre || ''}`.trim();
-    case 'product.quick_purchase':
-      return `Compro ${details.quantity || 1} pieza(s) en talla ${details.talla || 'UNITALLA'}`;
-    case 'cart.item_added':
-      return `Agrego ${details.quantity || 1} pieza(s) al carrito en talla ${details.talla || 'UNITALLA'}`;
-    case 'cart.item_quantity_updated':
-      return `Actualizo carrito a ${details.quantity || 1} pieza(s) en talla ${details.talla || 'UNITALLA'}`;
-    case 'cart.item_removed':
-      return 'Elimino un producto del carrito';
-    case 'cart.checkout_completed': {
-      const itemCount = Array.isArray(details.items) ? details.items.length : 0;
-      return `Compra completada con ${itemCount} producto(s)`;
-    }
-    case 'admin.user.created':
-      return `Creo la cuenta ${details.targetEmail || ''} con rol ${details.assignedRole || 'user'}`.trim();
-    case 'admin.user.role_updated':
-      return `Cambio el rol de ${details.targetEmail || ''} a ${details.assignedRole || ''}`.trim();
-    case 'admin.user.deleted':
-      return `Elimino la cuenta ${details.email || ''} y su historial`.trim();
-    case 'admin.products.seeded':
-      return `Genero ${details.inserted || 0} productos demo`;
-    default:
-      return 'Accion registrada correctamente';
-  }
-};
-
-const parseSizeStock = (rawText) => {
-  const raw = String(rawText || '').trim();
-  if (!raw) return [];
-
-  const items = raw.split(',')
-    .map((part) => part.trim())
-    .filter(Boolean);
-
-  return items.map((item) => {
-    const [sizeRaw, stockRaw] = item.split(':').map((part) => part?.trim());
-    const parsedStock = Number.parseInt(stockRaw, 10);
-
-    if (!sizeRaw || Number.isNaN(parsedStock) || parsedStock < 0) {
-      throw new Error('Formato de tallas invalido. Usa: S:10, M:8, L:6');
-    }
-
-    return {
-      talla: sizeRaw.toUpperCase(),
-      stock: parsedStock
-    };
-  });
-};
-
-const sizesToText = (sizes) => {
-  if (!Array.isArray(sizes) || sizes.length === 0) {
-    return '';
-  }
-
-  return sizes.map((size) => `${size.talla}:${size.stock}`).join(', ');
-};
+import {
+  createAdminUser,
+  deleteAdminUser,
+  getAdminAuditLogs,
+  getAdminOverview,
+  getAdminSessions,
+  getAdminUsers,
+  seedDemoProducts,
+  updateAdminUserRole
+} from '../services/adminService';
+import {
+  createProduct,
+  deleteProduct,
+  listProducts,
+  updateProduct
+} from '../services/productsService';
+import {
+  adminTabs,
+  categories,
+  defaultOverview,
+  initialProductForm,
+  initialUserForm,
+  segmentLabels,
+  segments
+} from './admin/constants';
+import {
+  formatAuditDetail,
+  formatDate,
+  getActionLabel,
+  parseSizeStock,
+  sizesToText
+} from './admin/utils';
 
 const AdminDashboard = () => {
   const { user } = useAuth();
@@ -143,13 +40,7 @@ const AdminDashboard = () => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
-  const [overview, setOverview] = useState({
-    totalUsers: 0,
-    totalAdmins: 0,
-    totalSessions: 0,
-    totalLogs: 0,
-    totalProducts: 0
-  });
+  const [overview, setOverview] = useState(defaultOverview);
 
   const [products, setProducts] = useState([]);
   const [productForm, setProductForm] = useState(initialProductForm);
@@ -167,40 +58,18 @@ const AdminDashboard = () => {
   const [sessions, setSessions] = useState([]);
   const [auditLogs, setAuditLogs] = useState([]);
 
-  const categories = useMemo(() => ([
-    'ropa',
-    'calzado',
-    'accesorios',
-    'deportivo',
-    'formal',
-    'playeras',
-    'pantalones',
-    'servicios',
-    'otros'
-  ]), []);
-
-  const segments = useMemo(() => ([
-    'hombre',
-    'mujer',
-    'nino',
-    'nina',
-    'bebe',
-    'unisex'
-  ]), []);
-
   const loadOverview = async () => {
-    const { data } = await api.get('/admin/overview');
-    setOverview(data.overview);
+    const nextOverview = await getAdminOverview();
+    setOverview(nextOverview);
   };
 
   const loadProducts = async () => {
-    const { data } = await api.get('/products', { params: { limit: 100 } });
-    setProducts(data.products || []);
+    const nextProducts = await listProducts({ limit: 100 });
+    setProducts(nextProducts);
   };
 
   const loadUsers = async () => {
-    const { data } = await api.get('/admin/users', { params: { limit: 100 } });
-    const incomingUsers = data.users || [];
+    const incomingUsers = await getAdminUsers();
     setUsers(incomingUsers);
     const nextRoleDraft = {};
     for (const currentUser of incomingUsers) {
@@ -210,13 +79,13 @@ const AdminDashboard = () => {
   };
 
   const loadSessions = async () => {
-    const { data } = await api.get('/admin/sessions', { params: { limit: 100 } });
-    setSessions(data.sessions || []);
+    const nextSessions = await getAdminSessions();
+    setSessions(nextSessions);
   };
 
   const loadAuditLogs = async () => {
-    const { data } = await api.get('/admin/audit-logs', { params: { limit: 100 } });
-    setAuditLogs(data.logs || []);
+    const nextAuditLogs = await getAdminAuditLogs();
+    setAuditLogs(nextAuditLogs);
   };
 
   const refreshCurrentTab = async () => {
@@ -226,15 +95,14 @@ const AdminDashboard = () => {
     try {
       await loadOverview();
 
-      if (activeTab === 'productos') {
-        await loadProducts();
-      } else if (activeTab === 'usuarios') {
-        await loadUsers();
-      } else if (activeTab === 'sesiones') {
-        await loadSessions();
-      } else if (activeTab === 'auditoria') {
-        await loadAuditLogs();
-      }
+      const tabLoaders = {
+        productos: loadProducts,
+        usuarios: loadUsers,
+        sesiones: loadSessions,
+        auditoria: loadAuditLogs
+      };
+      const loadActiveTab = tabLoaders[activeTab];
+      if (loadActiveTab) await loadActiveTab();
     } catch (requestError) {
       setError(requestError?.response?.data?.message || 'No se pudo cargar el panel admin');
     } finally {
@@ -262,7 +130,7 @@ const AdminDashboard = () => {
     setSuccess('');
 
     try {
-      const { data } = await api.post('/admin/seed-products', { count: 45 });
+      const data = await seedDemoProducts(45);
       setSuccess(`${data.inserted} productos demo agregados al catalogo`);
       await loadProducts();
       await loadOverview();
@@ -294,10 +162,10 @@ const AdminDashboard = () => {
       };
 
       if (editingProductId) {
-        await api.put(`/products/${editingProductId}`, payload);
+        await updateProduct(editingProductId, payload);
         setSuccess('Producto actualizado correctamente');
       } else {
-        await api.post('/products', payload);
+        await createProduct(payload);
         setSuccess('Producto creado correctamente');
       }
 
@@ -335,7 +203,7 @@ const AdminDashboard = () => {
     setError('');
     setSuccess('');
     try {
-      await api.delete(`/products/${product._id}`);
+      await deleteProduct(product._id);
       setSuccess('Producto eliminado correctamente');
       await loadProducts();
       await loadOverview();
@@ -359,7 +227,7 @@ const AdminDashboard = () => {
     setSuccess('');
 
     try {
-      await api.patch(`/admin/users/${targetUser._id}/role`, { role: nextRole });
+      await updateAdminUserRole(targetUser._id, nextRole);
       setSuccess(`Rol actualizado para ${targetUser.email}`);
       await loadUsers();
       await loadOverview();
@@ -379,7 +247,7 @@ const AdminDashboard = () => {
     setSuccess('');
 
     try {
-      await api.delete(`/admin/users/${targetUser._id}`);
+      await deleteAdminUser(targetUser._id);
       setSuccess(`Cuenta eliminada: ${targetUser.email}`);
       await Promise.all([loadUsers(), loadOverview(), loadSessions(), loadAuditLogs()]);
     } catch (requestError) {
@@ -400,7 +268,7 @@ const AdminDashboard = () => {
     setSuccess('');
 
     try {
-      await api.post('/admin/users', userForm);
+      await createAdminUser(userForm);
       setSuccess(`Cuenta creada: ${userForm.email}`);
       setUserForm(initialUserForm);
       await Promise.all([loadUsers(), loadOverview(), loadAuditLogs()]);

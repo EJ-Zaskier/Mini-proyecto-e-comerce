@@ -1,6 +1,12 @@
 import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import api from '../services/api';
+import useToast from '../hooks/useToast';
+import {
+  checkoutCart,
+  getCart,
+  removeCartItem,
+  updateCartItemQuantity
+} from '../services/cartService';
 
 const formatCurrency = (amount) => new Intl.NumberFormat('es-MX', {
   style: 'currency',
@@ -16,8 +22,8 @@ const Cart = () => {
   const [savingItemId, setSavingItemId] = useState('');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
-  const [toast, setToast] = useState(null);
   const [checkoutSummary, setCheckoutSummary] = useState(null);
+  const { toast, showToast, hideToast } = useToast();
 
   const syncLocalQuantities = (incomingCart) => {
     const next = {};
@@ -31,9 +37,9 @@ const Cart = () => {
     setLoading(true);
     setError('');
     try {
-      const { data } = await api.get('/cart');
-      setCart(data.cart);
-      syncLocalQuantities(data.cart);
+      const nextCart = await getCart();
+      setCart(nextCart);
+      syncLocalQuantities(nextCart);
     } catch (requestError) {
       setError(requestError?.response?.data?.message || 'No se pudo cargar el carrito');
     } finally {
@@ -49,22 +55,10 @@ const Cart = () => {
   useEffect(() => {
     if (location.state?.flashMessage) {
       setSuccess(location.state.flashMessage);
-      setToast({ id: Date.now(), type: 'success', message: location.state.flashMessage });
+      showToast('success', location.state.flashMessage);
       navigate(location.pathname, { replace: true, state: {} });
     }
-  }, [location.pathname, location.state, navigate]);
-
-  useEffect(() => {
-    if (!toast) return undefined;
-    const timer = window.setTimeout(() => setToast(null), 4200);
-    return () => window.clearTimeout(timer);
-  }, [toast]);
-
-  const showToast = (type, message) => {
-    const normalized = String(message || '').trim();
-    if (!normalized) return;
-    setToast({ id: Date.now(), type, message: normalized });
-  };
+  }, [location.pathname, location.state, navigate, showToast]);
 
   const handleQuantityChange = (itemId, value) => {
     if (!/^\d*$/.test(value)) return;
@@ -85,9 +79,9 @@ const Cart = () => {
     setSavingItemId(itemId);
 
     try {
-      const { data } = await api.put(`/cart/items/${itemId}`, { quantity });
-      setCart(data.cart);
-      syncLocalQuantities(data.cart);
+      const nextCart = await updateCartItemQuantity(itemId, quantity);
+      setCart(nextCart);
+      syncLocalQuantities(nextCart);
       const okMessage = 'Cantidad actualizada';
       setSuccess(okMessage);
       showToast('success', okMessage);
@@ -106,9 +100,9 @@ const Cart = () => {
     setSavingItemId(itemId);
 
     try {
-      const { data } = await api.delete(`/cart/items/${itemId}`);
-      setCart(data.cart);
-      syncLocalQuantities(data.cart);
+      const nextCart = await removeCartItem(itemId);
+      setCart(nextCart);
+      syncLocalQuantities(nextCart);
       const okMessage = 'Producto eliminado del carrito';
       setSuccess(okMessage);
       showToast('success', okMessage);
@@ -128,7 +122,7 @@ const Cart = () => {
     setLoading(true);
 
     try {
-      const { data } = await api.post('/cart/checkout');
+      const data = await checkoutCart();
       setCheckoutSummary(data.checkout);
       const okMessage = data.message || 'Compra simulada completada';
       setSuccess(okMessage);
@@ -151,7 +145,7 @@ const Cart = () => {
             <button
               type="button"
               className="toast-close"
-              onClick={() => setToast(null)}
+              onClick={hideToast}
               aria-label="Cerrar alerta"
             >
               x
