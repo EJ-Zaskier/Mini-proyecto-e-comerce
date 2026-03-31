@@ -7,9 +7,6 @@ Proyecto full stack con catalogo publico, carrito para usuarios autenticados y d
 - Node.js 18+
 - MongoDB local (o URI remota segura)
 
-## Variables de entorno
-Hay archivos .env de ejemplo de como se debe emplear ojo es ejemplo mas no funcional del todo
-
 ## Ejecutar
 
 ### 1) Backend
