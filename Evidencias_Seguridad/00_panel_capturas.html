@@ -1,0 +1,64 @@
+﻿<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Panel de Capturas - Seguridad</title>
+  <style>
+    body{font-family:Segoe UI,Arial,sans-serif;max-width:980px;margin:30px auto;padding:0 16px;line-height:1.45}
+    h1,h2{margin:0 0 10px}
+    .card{border:1px solid #ddd;border-radius:10px;padding:14px 16px;margin:12px 0}
+    a{color:#0a58ca;text-decoration:none}
+    a:hover{text-decoration:underline}
+    code{background:#f5f5f5;padding:2px 5px;border-radius:4px}
+    .ok{color:#0a7d34;font-weight:600}
+  </style>
+</head>
+<body>
+  <h1>Panel de Capturas - Actividad de Seguridad</h1>
+  <p class="ok">Proyecto en vivo detectado en <code>http://localhost:5173</code> y <code>http://localhost:5000/api/health</code>.</p>
+
+  <div class="card">
+    <h2>1) Proyecto en vivo</h2>
+    <ul>
+      <li><a href="http://localhost:5173" target="_blank">Frontend (catálogo/login)</a></li>
+      <li><a href="http://localhost:5000/api/health" target="_blank">Backend health endpoint</a></li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h2>2) OWASP ZAP (automatizado)</h2>
+    <ul>
+      <li><a href="./20_zap_frontend_live.html" target="_blank">Reporte ZAP Frontend LIVE (HTML)</a></li>
+      <li><a href="./21_zap_backend_live.html" target="_blank">Reporte ZAP Backend LIVE (HTML)</a></li>
+      <li><a href="./10_zap_frontend_console.txt" target="_blank">Consola ZAP Frontend (run exitoso)</a></li>
+      <li><a href="./11_zap_backend_console.txt" target="_blank">Consola ZAP Backend (run exitoso)</a></li>
+      <li><a href="./20_zap_frontend_live.json" target="_blank">JSON ZAP Frontend LIVE</a></li>
+      <li><a href="./21_zap_backend_live.json" target="_blank">JSON ZAP Backend LIVE</a></li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h2>3) Automatizadas (tests y dependencias)</h2>
+    <ul>
+      <li><a href="./01_backend_tests_clean.txt" target="_blank">Backend npm test</a></li>
+      <li><a href="./02_frontend_tests_clean.txt" target="_blank">Frontend npm test</a></li>
+      <li><a href="./03_backend_audit.json" target="_blank">Backend npm audit</a></li>
+      <li><a href="./04_frontend_audit.json" target="_blank">Frontend npm audit</a></li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h2>4) Pruebas manuales</h2>
+    <ul>
+      <li><a href="./06_manual_live_console.txt" target="_blank">Consola manual (SQLi, XSS, validación, acceso, CORS)</a></li>
+      <li><a href="./05_manual_security_tests.json" target="_blank">JSON consolidado manual</a></li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h2>Ruta base</h2>
+    <p><code>c:\Users\Quique-\Documents\Tareas UTT\Cuatri 8\Seguridad en desarrollo de apps\Sitio web\Evidencias_Seguridad</code></p>
+  </div>
+</body>
+</html>

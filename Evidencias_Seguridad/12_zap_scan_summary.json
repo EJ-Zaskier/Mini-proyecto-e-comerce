@@ -1,0 +1,18 @@
+﻿{
+    "backendReady":  true,
+    "frontendReady":  true,
+    "zapFrontendExitCode":  2,
+    "zapBackendExitCode":  2,
+    "generated":  [
+                      "10_zap_frontend_console.txt",
+                      "10_zap_frontend.json",
+                      "10_zap_frontend.html",
+                      "10_zap_frontend.md",
+                      "10_zap_frontend.xml",
+                      "11_zap_backend_console.txt",
+                      "11_zap_backend.json",
+                      "11_zap_backend.html",
+                      "11_zap_backend.md",
+                      "11_zap_backend.xml"
+                  ]
+}

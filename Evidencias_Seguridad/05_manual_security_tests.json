@@ -1,0 +1,41 @@
+{
+  "sqlInjection": {
+    "endpoint": "POST /api/auth/register",
+    "payload": "' OR '1'='1",
+    "status": 400,
+    "blocked": true,
+    "message": "Datos inválidos"
+  },
+  "xss": {
+    "endpoint": "POST/GET /api/comments",
+    "payload": "<script>alert('XSS')</script>",
+    "createStatus": 201,
+    "listStatus": 200,
+    "persistedAsText": true
+  },
+  "inputValidation": {
+    "endpoint": "POST /api/products",
+    "status": 400,
+    "blocked": true,
+    "errorsCount": 6
+  },
+  "accessControl": {
+    "endpoint": "GET /api/admin/users",
+    "status": 403,
+    "blocked": true,
+    "message": "No tienes permisos para esta accion"
+  },
+  "cors": {
+    "allowedOriginStatus": 200,
+    "allowedOriginHeader": "http://localhost:5173",
+    "blockedOriginStatus": 403,
+    "blockedOriginMessage": "Origen no permitido por CORS"
+  },
+  "securityHeaders": {
+    "status": 200,
+    "hasCsp": true,
+    "hasXFrameOptions": true,
+    "hasXContentTypeOptions": true,
+    "xPoweredByPresent": false
+  }
+}
